@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  studentId    String   @unique
+  email        String   @unique
+  passwordHash String
+  nickname     String
+  department   String?
+  campus       String?
+  creditScore  Int      @default(100)
+  createdAt    DateTime @default(now())
+
+  books        Book[]
+  buyReservations  Reservation[] @relation("buyer")
+  sellReservations Reservation[] @relation("seller")
+  reviewsGiven     Review[]      @relation("reviewer")
+  reviewsReceived  Review[]      @relation("reviewed")
+  favorites    Favorite[]
+}
+
+model Book {
+  id            String     @id @default(uuid())
+  sellerId      String
+  seller        User       @relation(fields: [sellerId], references: [id])
+  isbn          String?
+  title         String
+  author        String?
+  publisher     String?
+  coverUrl      String?
+  price         Float
+  originalPrice Float?
+  condition     String
+  category      String
+  tags          String[]
+  description   String?
+  campus        String
+  pickupLocation String?
+  status        String     @default("AVAILABLE")
+  views         Int        @default(0)
+  createdAt     DateTime   @default(now())
+
+  reservations  Reservation[]
+  favorites     Favorite[]
+}
+
+model Reservation {
+  id          String   @id @default(uuid())
+  bookId      String
+  book        Book     @relation(fields: [bookId], references: [id])
+  buyerId     String
+  buyer       User     @relation("buyer", fields: [buyerId], references: [id])
+  sellerId    String
+  seller      User     @relation("seller", fields: [sellerId], references: [id])
+  pickupCode  String   @unique
+  pickupTime  DateTime?
+  status      String   @default("PENDING")
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  review      Review?
+}
+
+model Review {
+  id             String      @id @default(uuid())
+  reservationId  String      @unique
+  reservation    Reservation @relation(fields: [reservationId], references: [id])
+  reviewerId     String
+  reviewer       User        @relation("reviewer", fields: [reviewerId], references: [id])
+  reviewedId     String
+  reviewed       User        @relation("reviewed", fields: [reviewedId], references: [id])
+  rating         Int
+  comment        String?
+  createdAt      DateTime    @default(now())
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, bookId])
+}

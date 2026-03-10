@@ -8,6 +8,7 @@ import Publish from './pages/Publish'
 import Reservations from './pages/Reservations'
 import Profile from './pages/Profile'
 import Admin from './pages/Admin'
+import EditProfile from './pages/EditProfile'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="publish" element={<Publish />} />
         <Route path="reservations" element={<Reservations />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

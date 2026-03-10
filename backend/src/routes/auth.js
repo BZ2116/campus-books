@@ -6,7 +6,7 @@ const prisma = require('../lib/prisma')
 // 1. 注册接口
 router.post('/register', async (req, res) => {
   try {
-    // 删除了 campus，增加了 qq
+
     const { studentId, email, password, nickname, department, qq } = req.body
     if (!studentId || !email || !password || !nickname) {
       return res.status(400).json({ error: '请填写完整信息' })
@@ -100,8 +100,8 @@ router.get('/me', require('./../../src/middleware/auth'), async (req, res) => {
     res.status(500).json({ error: '获取失败' })
   }
 })
-// 4. 修改当前用户信息 (用于页面刷新后恢复状态)
-router.put('/profile', auth, async (req, res) => {
+// 4. 修改当前用户信息 
+router.put('/profile', async (req, res) => {
   try {
     const userId = req.user.id
     const { nickname, email, QQ, department, campus } = req.body

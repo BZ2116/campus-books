@@ -67,7 +67,15 @@ export default function Reservations() {
                 </div>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                   <span style={{ background: s.bg, color: s.color, fontSize: 12, padding: '3px 10px', borderRadius: 50, fontWeight: 600 }}>{s.label}</span>
-                  <span style={{ fontFamily: 'monospace', fontSize: 13, color: '#ff6b35', fontWeight: 700 }}>取货码：{r.pickupCode}</span>
+                  {isBuyer ? (
+                    <span style={{ fontFamily: 'monospace', fontSize: 13, color: '#ff6b35', fontWeight: 700 }}>
+                      取货码：{r.pickupCode}
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 12, color: '#888', fontStyle: 'italic' }}>
+                      等待买家展示取货码
+                    </span>
+                  )}
                   <span style={{ fontSize: 12, color: '#aaa' }}>{new Date(r.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>

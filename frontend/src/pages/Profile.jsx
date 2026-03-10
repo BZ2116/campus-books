@@ -23,7 +23,9 @@ export default function Profile() {
       <div style={{ background: '#1a1a2e', borderRadius: 16, padding: '28px 32px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 20 }}>
         <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#ff6b35', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>👤</div>
         <div style={{ flex: 1 }}>
-          <Link
+          <div style={{ fontSize: 20, fontWeight: 900, color: '#fff' }}>{user?.nickname}</div>
+          <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{user?.email}</div>
+                    <Link
             to="/edit-profile"
             style={{
               background: '#ff6b35',
@@ -36,8 +38,6 @@ export default function Profile() {
           >
             编辑资料
           </Link>
-          <div style={{ fontSize: 20, fontWeight: 900, color: '#fff' }}>{user?.nickname}</div>
-          <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{user?.email}</div>
         </div>
         <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid #555', color: '#aaa', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 13 }}>退出登录</button>
       </div>

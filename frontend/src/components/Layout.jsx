@@ -54,7 +54,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer style={{ background: '#1a1a2e', color: '#666', textAlign: 'center', padding: '16px', fontSize: 13 }}>
-        © 2024 校园书市 · 让知识流转起来
+        © 2026 校园书市 · 让知识流转起来
       </footer>
     </div>
   )

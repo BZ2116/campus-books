@@ -14,33 +14,36 @@ export default function EditProfile() {
   const [department, setDepartment] = useState(user.department || '')
   const [campus, setCampus] = useState(user.campus || '')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+ const handleSubmit = async (e) => {
+  e.preventDefault()
 
-    try {
-      const res = await api.put('/auth/profile', {
-        nickname,
-        email,
-        QQ,
-        department,
-        campus
-      })
+  try {
 
-        if (res.data.user) {
-    setUser(res.data.user)
+    const res = await api.put('/auth/profile', {
+      nickname,
+      email,
+      QQ,
+      department,
+      campus
+    })
+
+    console.log(res.data)
+
+    if (res.data?.user) {
+      setUser(res.data.user)
+    }
+
+    alert('修改成功')
+
+    navigate('/profile')
+
+  } catch (err) {
+
+    console.error(err)
+
+    alert('修改失败')
   }
-
-      alert('修改成功')
-
-      navigate('/profile')
-    }catch (err) {
-
-  console.log(err.response)
-  console.log(err.response?.data)
-
-  alert('修改失败')
 }
-  }
 
   return (
     <div style={{
@@ -165,4 +168,5 @@ const inputStyle = {
   fontSize: 14,
   outline: 'none'
 }
+
 

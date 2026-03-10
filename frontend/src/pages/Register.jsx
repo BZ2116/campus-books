@@ -6,7 +6,7 @@ import useStore from '../store'
 
 export default function Register() {
 
-  const [form, setForm] = useState({ studentId: '', email: '', password: '', nickname: '', department: '', campus: '南校区' })
+  const [form, setForm] = useState({ studentId: '', email: '', password: '', nickname: '', department: '', qq: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useStore()
@@ -35,6 +35,7 @@ export default function Register() {
     { key: 'password', label: '密码', placeholder: '请设置密码（至少6位）', type: 'password' },
     { key: 'nickname', label: '昵称', placeholder: '你的昵称', type: 'text' },
     { key: 'department', label: '学院', placeholder: '如：计算机学院', type: 'text' },
+    { key: 'qq', label: 'QQ号', placeholder: '请输入QQ号方便买家联系', type: 'text' },
   ]
 
   return (
@@ -53,13 +54,6 @@ export default function Register() {
             </div>
           ))}
 
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ fontSize: 13, color: '#555', display: 'block', marginBottom: 6 }}>所在校区</label>
-            <select value={form.campus} onChange={e => setForm(p => ({ ...p, campus: e.target.value }))}
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid #e0e0e0', borderRadius: 8, fontSize: 14, outline: 'none' }}>
-              {['南校区', '北校区', '东校区', '西校区'].map(c => <option key={c}>{c}</option>)}
-            </select>
-          </div>
 
           <button type="submit" disabled={loading} style={{
             width: '100%', padding: '12px', background: '#ff6b35', color: '#fff',

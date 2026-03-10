@@ -6,7 +6,8 @@
 "scripts": {
   "dev": "nodemon src/index.js",
   "start": "node ./src/index.js",
-  "postinstall": "prisma generate"
+  "postinstall": "prisma generate",
+  "build": "npx prisma generate && npx prisma db push"
 },
   "keywords": [],
   "author": "",

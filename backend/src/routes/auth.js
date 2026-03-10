@@ -101,30 +101,26 @@ router.get('/me', require('./../../src/middleware/auth'), async (req, res) => {
   }
 })
 // 4. 修改当前用户信息 (用于页面刷新后恢复状态)
-router.put('/profile', async (req, res) => {
+router.put('/profile', auth, async (req, res) => {
   try {
-    const userId = req.user.id   // JWT中解析出来的用户id
-    const { nickname, email, qq, department, campus } = req.body
+    const userId = req.user.id
+    const { nickname, email, QQ, department, campus } = req.body
 
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
         nickname,
         email,
-        qq,
+        QQ,
         department,
         campus
       }
     })
 
-    res.json({
-      message: '更新成功',
-      user
-    })
+    res.json({ user })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: '更新失败' })
   }
 })
-
 module.exports = router

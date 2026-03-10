@@ -103,7 +103,9 @@ router.get('/me', require('./../../src/middleware/auth'), async (req, res) => {
 })
 // 4. 修改当前用户信息 (用于页面刷新后恢复状态)
 router.put('/profile', auth, async (req, res) => {
+
   try {
+
     const userId = req.user.id
     const { nickname, email, QQ, department, campus } = req.body
 
@@ -115,16 +117,51 @@ router.put('/profile', auth, async (req, res) => {
         QQ,
         department,
         campus
+      },
+      select: {
+        id: true,
+        studentId: true,
+        nickname: true,
+        email: true,
+        QQ: true,
+        department: true,
+        campus: true,
+        creditScore: true,
+        isAdmin: true
       }
     })
 
-    res.json({
-      message: '更新成功',
-      user
-    })
+    res.json({ user })
+
   } catch (err) {
+
     console.error(err)
-    res.status(500).json({ error: '更新失败' })
+
+    // ⭐ Prisma 唯一约束错误
+    if (err.code === 'P2002') {
+
+      const field = err.meta?.target?.[0]
+
+      if (field === 'email') {
+        return res.status(400).json({
+          error: '该邮箱已被使用'
+        })
+      }
+
+      if (field === 'studentId') {
+        return res.status(400).json({
+          error: '学号已存在'
+        })
+      }
+
+      return res.status(400).json({
+        error: '数据重复'
+      })
+    }
+
+    res.status(500).json({
+      error: '服务器错误'
+    })
   }
 })
 module.exports = router

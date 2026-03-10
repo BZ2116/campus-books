@@ -17,21 +17,19 @@ export default function EditProfile() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-            const res = await api.put('/auth/profile', {
-                nickname,
-                email,
-                QQ,
-                department,
-            })
+        const res = await api.put('/auth/profile', {
+            nickname,
+            email,
+            QQ,
+            department,
+        })
+        const updatedUser = res.data.user || res.data
+        setUser(updatedUser)
+        console.log(updatedUser);
 
-            const updatedUser = res.data.user || res.data
-            setUser(updatedUser)
-            console.log();
-            
-            alert('修改成功')
-            navigate('/profile')
+        alert('修改成功')
+        navigate('/profile')
 
-        
     }
 
     return (
@@ -150,6 +148,7 @@ const inputStyle = {
     fontSize: 14,
     outline: 'none'
 }
+
 
 
 

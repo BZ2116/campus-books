@@ -57,7 +57,6 @@ export default function BookDetail() {
                 width: '100%', 
                 height: '100%', 
                 maxHeight: '450px',
-                // 关键修改：使用 contain 确保图片不被裁切
                 objectFit: 'contain', 
                 padding: '20px' 
               }} 
@@ -84,11 +83,10 @@ export default function BookDetail() {
             {book.originalPrice && <span style={{ fontSize: 18, color: '#bbb', textDecoration: 'line-through' }}>¥{book.originalPrice}</span>}
           </div>
 
-          {/* 信息网格：移除校区，增加 QQ */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 30 }}>
             {[
               ['🐧 卖家QQ', book.seller?.qq || '未填写'], 
-              ['🏫 取货地点', book.pickupLocation || '面议'], 
+              ['🏫 取货地点', book.pickupLocation || '联系卖家'], 
               ['👁 浏览次数', `${book.views} 次`], 
               ['⏰ 发布时间', new Date(book.createdAt).toLocaleDateString()]
             ].map(([k, v]) => (

@@ -11,20 +11,26 @@ const adminOnly = (req, res, next) => {
   }
 }
 
-// GET /api/admin/books - 获取全站所有书籍
+// backend/routes/admin.js
 router.get('/books', auth, adminOnly, async (req, res) => {
   try {
     const books = await prisma.book.findMany({
       include: {
-        seller: { // 确保这里和你的 Prisma 模型关联名一致
+        seller: { // 注意：如果你的模型里叫 owner，这里就改 owner
           select: { studentId: true, nickname: true }
         }
       },
       orderBy: { createdAt: 'desc' }
     })
-    res.json(books)
+    
+    // 调试用：在后端终端看一眼到底查出来几条
+    console.log("查询到的书籍数量:", books.length);
+    
+    // 明确指定返回 200 状态码
+    return res.status(200).json(books); 
   } catch (e) {
-    res.status(500).json({ error: '获取数据失败' })
+    console.error("管理后台查询失败:", e);
+    res.status(500).json({ error: '获取数据失败' });
   }
 })
 
@@ -39,5 +45,6 @@ router.delete('/books/:id', auth, adminOnly, async (req, res) => {
     res.status(500).json({ error: '删除失败' })
   }
 })
+
 
 module.exports = router

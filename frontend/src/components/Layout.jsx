@@ -23,6 +23,11 @@ export default function Layout() {
         </Link>
         <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
           <Link to="/" style={{ color: '#ccc', textDecoration: 'none', fontSize: 14 }}>首页</Link>
+          {user?.isAdmin && (
+            <Link to="/admin" style={{ color: '#ff6b35', fontWeight: 'bold', marginRight: 15 }}>
+              ⚙️ 管理后台
+            </Link>
+          )}
           {user ? (
             <>
               <Link to="/publish" style={{ color: '#ff6b35', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>+ 发布</Link>

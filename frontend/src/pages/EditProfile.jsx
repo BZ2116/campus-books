@@ -26,14 +26,20 @@ export default function EditProfile() {
         campus
       })
 
-      setUser(res.data.user)
+        if (res.data.user) {
+    setUser(res.data.user)
+  }
 
       alert('修改成功')
 
       navigate('/profile')
-    } catch {
-      alert('修改失败')
-    }
+    }catch (err) {
+
+  console.log(err.response)
+  console.log(err.response?.data)
+
+  alert('修改失败')
+}
   }
 
   return (
@@ -159,3 +165,4 @@ const inputStyle = {
   fontSize: 14,
   outline: 'none'
 }
+

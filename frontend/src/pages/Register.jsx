@@ -1,14 +1,21 @@
 import { useState } from 'react'
+
 import { Link, useNavigate } from 'react-router-dom'
+
 import api from '../api'
+
 import useStore from '../store'
 
+
+
 export default function Register() {
+
   const [form, setForm] = useState({ studentId: '', email: '', password: '', nickname: '', department: '', campus: '南校区' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useStore()
   const navigate = useNavigate()
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -23,6 +30,7 @@ export default function Register() {
     } finally {
       setLoading(false)
     }
+
   }
 
   const fields = [
@@ -48,6 +56,7 @@ export default function Register() {
                 placeholder={f.placeholder} type={f.type} required={f.key !== 'department'} />
             </div>
           ))}
+
           <div style={{ marginBottom: 24 }}>
             <label style={{ fontSize: 13, color: '#555', display: 'block', marginBottom: 6 }}>所在校区</label>
             <select value={form.campus} onChange={e => setForm(p => ({ ...p, campus: e.target.value }))}
@@ -55,15 +64,21 @@ export default function Register() {
               {['南校区', '北校区', '东校区', '西校区'].map(c => <option key={c}>{c}</option>)}
             </select>
           </div>
+
           <button type="submit" disabled={loading} style={{
             width: '100%', padding: '12px', background: '#ff6b35', color: '#fff',
             border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: 'pointer'
           }}>{loading ? '注册中...' : '立即注册'}</button>
         </form>
+
         <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: '#888' }}>
           已有账号？<Link to="/login" style={{ color: '#ff6b35', fontWeight: 600 }}>立即登录</Link>
         </p>
+
       </div>
+
     </div>
+
   )
+
 }

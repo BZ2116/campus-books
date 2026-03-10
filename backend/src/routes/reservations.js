@@ -67,16 +67,45 @@ router.put('/:id/complete', authMiddleware, async (req, res) => {
 })
 
 // 取消预约
+// 取消预约（已修复权限判断）
 router.put('/:id/cancel', authMiddleware, async (req, res) => {
   try {
-    const reservation = await prisma.reservation.findUnique({ where: { id: req.params.id } })
-    if (!reservation) return res.status(404).json({ error: '预约不存在' })
-    if (reservation.buyerId !== req.user.id) return res.status(403).json({ error: '无权操作' })
+    console.log('=== 取消预约调试信息 ===')
+    console.log('当前用户 ID (JWT):', req.user?.id || req.user?._id || 'undefined')
+    console.log('要取消的预约 ID:', req.params.id)
 
-    await prisma.reservation.update({ where: { id: req.params.id }, data: { status: 'CANCELLED' } })
-    await prisma.book.update({ where: { id: reservation.bookId }, data: { status: 'AVAILABLE' } })
+    const reservation = await prisma.reservation.findUnique({
+      where: { id: req.params.id },
+      select: { id: true, buyerId: true, status: true, bookId: true }
+    })
+
+    if (!reservation) return res.status(404).json({ error: '预约不存在' })
+
+    console.log('数据库中 buyerId:', reservation.buyerId)
+    console.log('类型对比 buyerId === req.user.id:', reservation.buyerId === req.user.id)
+    console.log('字符串安全对比 String(buyerId) === String(user.id):', String(reservation.buyerId) === String(req.user?.id || req.user?._id))
+
+    // 修复点：使用 String() 安全比较（解决类型不一致）
+    if (String(reservation.buyerId) !== String(req.user?.id || req.user?._id)) {
+      return res.status(403).json({ error: '无权操作' })
+    }
+
+    if (reservation.status !== 'PENDING') {
+      return res.status(400).json({ error: '预约状态异常，无法取消' })
+    }
+
+    await prisma.reservation.update({
+      where: { id: req.params.id },
+      data: { status: 'CANCELLED' }
+    })
+    await prisma.book.update({
+      where: { id: reservation.bookId },
+      data: { status: 'AVAILABLE' }
+    })
+
     res.json({ message: '已取消' })
   } catch (e) {
+    console.error('取消失败详情:', e.message)
     res.status(500).json({ error: '取消失败' })
   }
 })

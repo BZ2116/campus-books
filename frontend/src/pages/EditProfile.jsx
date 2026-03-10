@@ -12,7 +12,7 @@ export default function EditProfile() {
   const [email, setEmail] = useState(user.email || '')
   const [QQ, setQQ] = useState(user.QQ || '')
   const [department, setDepartment] = useState(user.department || '')
-  const [campus, setCampus] = useState(user.campus || '')
+
 
  const handleSubmit = async (e) => {
   e.preventDefault()
@@ -24,8 +24,10 @@ export default function EditProfile() {
       email,
       QQ,
       department,
-      campus
     })
+    console.log("后端返回:", res)
+    console.log("data:", res.data)
+    console.log("user:", res.data?.user)
 
     console.log(res.data)
 
@@ -104,14 +106,7 @@ export default function EditProfile() {
             />
           </div>
 
-          <div>
-            <label style={{ color: '#aaa', fontSize: 13 }}>校区</label>
-            <input
-              value={campus}
-              onChange={e => setCampus(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
+         
 
           <div style={{
             display: 'flex',
@@ -168,5 +163,6 @@ const inputStyle = {
   fontSize: 14,
   outline: 'none'
 }
+
 
 

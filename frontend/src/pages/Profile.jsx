@@ -23,6 +23,19 @@ export default function Profile() {
       <div style={{ background: '#1a1a2e', borderRadius: 16, padding: '28px 32px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 20 }}>
         <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#ff6b35', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>👤</div>
         <div style={{ flex: 1 }}>
+          <Link
+            to="/edit-profile"
+            style={{
+              background: '#ff6b35',
+              color: '#fff',
+              padding: '6px 12px',
+              borderRadius: 6,
+              fontSize: 12,
+              textDecoration: 'none'
+            }}
+          >
+            编辑资料
+          </Link>
           <div style={{ fontSize: 20, fontWeight: 900, color: '#fff' }}>{user?.nickname}</div>
           <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{user?.email}</div>
         </div>

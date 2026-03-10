@@ -41,51 +41,84 @@ const LOCAL_BOOKS = {
 export default function Publish() {
   const navigate = useNavigate()
   const { user } = useStore()
-  const [form, setForm] = useState({ isbn: '', title: '', author: '', publisher: '', price: '', originalPrice: '', condition: '九成新', category: '计算机', tags: '', description: '', campus: '南校区', pickupLocation: '' })
+
+  // 1. 初始化表单，确保包含 coverUrl
+  const [form, setForm] = useState({
+    isbn: '', title: '', author: '', publisher: '', price: '',
+    originalPrice: '', condition: '九成新', category: '计算机',
+    tags: '', description: '', campus: '南校区', pickupLocation: '',
+    coverUrl: ''
+  })
   const [isbnLoading, setIsbnLoading] = useState(false)
   const [isbnMsg, setIsbnMsg] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [uploading, setUploading] = useState(false) // 图片上传状态
   const [error, setError] = useState('')
 
   if (!user) { navigate('/login'); return null }
 
-const lookupISBN = async () => {
-  if (!form.isbn) return
-  setIsbnLoading(true)
-  setIsbnMsg('')
-
-  // 第一步：查本地库
-  const local = LOCAL_BOOKS[form.isbn.trim()]
-  if (local) {
-    setForm(p => ({ ...p, ...local, coverUrl: p.coverUrl }))
-    setIsbnMsg('✅ 识别成功（本地库）')
-    setIsbnLoading(false)
-    return
-  }
-  try {
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=isbn:${form.isbn}&key=AIzaSyC9c6vl-iFL8ivSepYaGgmSba-WPqrqSBw`
-    )
-    const data = await response.json()
-    const book = data.items?.[0]?.volumeInfo
-    if (book) {
-      setForm(p => ({
-        ...p,
-        title: book.title || p.title,
-        author: book.authors?.[0] || p.author,
-        publisher: book.publisher || p.publisher,
-        coverUrl: book.imageLinks?.thumbnail || p.coverUrl
-      }))
-      setIsbnMsg('✅ 识别成功，信息已自动填写')
-    } else {
-      setIsbnMsg('❌ 未找到该ISBN，请手动填写')
+  // 上传图片到 Cloudinary
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    setUploading(true)
+    
+    const formData = new FormData()
+    formData.append('file', file)
+    // [重要] 这里填入你在 Cloudinary 后台创建的 Unsigned Upload Preset 名称
+    formData.append('upload_preset', 'books-upload') 
+    
+    try {
+      // [重要] 将 your_cloud_name 替换为你 Cloudinary 的 Cloud Name
+      const res = await fetch('https://api.cloudinary.com/v1_1/dkm0g2s8q/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      const data = await res.json()
+      setForm(p => ({ ...p, coverUrl: data.secure_url }))
+    } catch (e) {
+      alert('图片上传失败，请检查网络')
+    } finally {
+      setUploading(false)
     }
-  } catch (e) {
-    setIsbnMsg('❌ 请求失败，请手动填写')
-  } finally {
-    setIsbnLoading(false)
   }
-}
+  const lookupISBN = async () => {
+    if (!form.isbn) return
+    setIsbnLoading(true)
+    setIsbnMsg('')
+
+    // 第一步：查本地库
+    const local = LOCAL_BOOKS[form.isbn.trim()]
+    if (local) {
+      setForm(p => ({ ...p, ...local, coverUrl: p.coverUrl }))
+      setIsbnMsg('✅ 识别成功，信息已自动填写')
+      setIsbnLoading(false)
+      return
+    }
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${form.isbn}&key=AIzaSyC9c6vl-iFL8ivSepYaGgmSba-WPqrqSBw`
+      )
+      const data = await response.json()
+      const book = data.items?.[0]?.volumeInfo
+      if (book) {
+        setForm(p => ({
+          ...p,
+          title: book.title || p.title,
+          author: book.authors?.[0] || p.author,
+          publisher: book.publisher || p.publisher,
+          coverUrl: book.imageLinks?.thumbnail || p.coverUrl
+        }))
+        setIsbnMsg('✅ 识别成功，信息已自动填写')
+      } else {
+        setIsbnMsg('❌ 未找到该ISBN，请手动填写')
+      }
+    } catch (e) {
+      setIsbnMsg('❌ 请求失败，请手动填写')
+    } finally {
+      setIsbnLoading(false)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -107,6 +140,15 @@ const lookupISBN = async () => {
     <div style={{ maxWidth: 600, margin: '0 auto' }}>
       <h2 style={{ marginBottom: 24, fontSize: 22, fontWeight: 900 }}>📚 发布闲置书籍</h2>
       <div style={{ background: '#fff', borderRadius: 16, padding: 32, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
+       <div style={{ marginBottom: 24 }}>
+          <label style={{ fontSize: 13, color: '#555', display: 'block', marginBottom: 6 }}>书籍照片</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {form.coverUrl && <img src={form.coverUrl} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8 }} />}
+            <input type="file" onChange={handleImageUpload} disabled={uploading} />
+          </div>
+          {uploading && <div style={{ fontSize: 12, color: '#ff6b35', marginTop: 4 }}>正在上传照片...</div>}
+        </div>
+       
         {/* ISBN */}
         <div style={{ background: '#fff8f5', border: '1px solid #ffe0d0', borderRadius: 12, padding: 16, marginBottom: 24 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#ff6b35', marginBottom: 10 }}>📱 ISBN自动识别</div>

@@ -17,7 +17,7 @@ export default function EditProfile() {
 const handleSubmit = async (e) => {
 
   e.preventDefault()
-
+console.log("开始请求")
   try {
 
     const res = await api.put('/auth/profile', {
@@ -26,7 +26,7 @@ const handleSubmit = async (e) => {
       QQ,
       department
     })
-
+console.log("接口返回:", res)
     const updatedUser = res.data.user || res.data
 
     setUser(updatedUser)
@@ -169,6 +169,7 @@ const inputStyle = {
     fontSize: 14,
     outline: 'none'
 }
+
 
 
 

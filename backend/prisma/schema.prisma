@@ -42,7 +42,6 @@ model Book {
   category      String
   tags          String[]
   description   String?
-  campus        String
   pickupLocation String?
   status        String     @default("AVAILABLE")
   views         Int        @default(0)

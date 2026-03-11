@@ -53,7 +53,7 @@ export default function Admin() {
             <tr key={b.id} style={{ borderBottom: '1px solid #eee' }}>
               <td style={tdStyle}><img src={b.coverUrl} style={{ width: 40, height: 40, objectFit: 'cover' }} /></td>
               <td style={tdStyle}>{b.title}</td>
-              <td style={tdStyle}>{b.owner?.studentId}</td>
+              <td style={tdStyle}>{b.seller?.studentId || '未知'}</td>
               <td style={tdStyle}>¥{b.price}</td>
               <td style={tdStyle}>
                 <button onClick={() => handleDelete(b.id)} style={{ color: '#e53e3e', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 600 }}>强行下架</button>

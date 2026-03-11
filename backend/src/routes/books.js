@@ -7,10 +7,9 @@ const axios = require('axios')
 // 获取书籍列表
 router.get('/', async (req, res) => {
   try {
-    const { search, category, campus, page = 1, limit = 20 } = req.query
+    const { search, category, page = 1, limit = 20 } = req.query
     const where = { status: 'AVAILABLE' }
     if (category && category !== '全部') where.category = category
-    if (campus) where.campus = campus
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
@@ -21,7 +20,7 @@ router.get('/', async (req, res) => {
     const [books, total] = await Promise.all([
       prisma.book.findMany({
         where,
-        include: { seller: { select: { nickname: true, campus: true, creditScore: true } } },
+        include: { seller: { select: { nickname: true, creditScore: true } } },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: Number(limit)
@@ -39,7 +38,7 @@ router.get('/:id', async (req, res) => {
   try {
     const book = await prisma.book.findUnique({
       where: { id: req.params.id },
-      include: { seller: { select: { id: true, nickname: true, campus: true, department: true, creditScore: true } } }
+      include: { seller: { select: { id: true, nickname: true, department: true, creditScore: true } } }
     })
     if (!book) return res.status(404).json({ error: '书籍不存在' })
     await prisma.book.update({ where: { id: req.params.id }, data: { views: { increment: 1 } } })
@@ -54,8 +53,8 @@ router.get('/:id', async (req, res) => {
 // 发布书籍
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { isbn, title, author, publisher, coverUrl, price, originalPrice, condition, category, tags, description, campus, pickupLocation } = req.body
-    if (!title || !price || !condition || !category || !campus) {
+    const { isbn, title, author, publisher, coverUrl, price, originalPrice, condition, category, tags, description, pickupLocation } = req.body
+    if (!title || !price || !condition || !category ) {
       return res.status(400).json({ error: '请填写完整信息' })
     }
     const book = await prisma.book.create({
@@ -66,7 +65,7 @@ router.post('/', authMiddleware, async (req, res) => {
         originalPrice: originalPrice ? Number(originalPrice) : null,
         condition, category,
         tags: tags || [],
-        description, campus, pickupLocation
+        description, pickupLocation
       }
     })
     res.json(book)

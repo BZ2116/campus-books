@@ -21,22 +21,35 @@ export default function Layout() {
         <Link to="/" style={{ color: '#ff6b35', fontWeight: 900, fontSize: 20, textDecoration: 'none' }}>
           📚 校园书市
         </Link>
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <Link to="/" style={{ color: '#ccc', textDecoration: 'none', fontSize: 14 }}>首页</Link>
-          {user?.isAdmin && (
-            <Link to="/admin" style={{ color: '#ff6b35', fontWeight: 'bold', marginRight: 15 }}>
-              ⚙️ 管理后台
-            </Link>
-          )}
+
           {user ? (
             <>
+              {/* --- 新增：管理员入口 --- */}
+              {user.isAdmin && (
+                <Link to="/admin" style={{ 
+                  color: '#fbbf24', // 使用亮黄色区分普通链接
+                  textDecoration: 'none', 
+                  fontSize: 14, 
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}>
+                  ⚙️ 管理后台
+                </Link>
+              )}
+              {/* ----------------------- */}
+
               <Link to="/publish" style={{ color: '#ff6b35', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>+ 发布</Link>
               <Link to="/reservations" style={{ color: '#ccc', textDecoration: 'none', fontSize: 14 }}>我的预约</Link>
               <Link to="/profile" style={{ color: '#ccc', textDecoration: 'none', fontSize: 14 }}>{user.nickname}</Link>
+              
               <button onClick={handleLogout} style={{
                 background: 'transparent', border: '1px solid #555',
                 color: '#ccc', padding: '4px 12px', borderRadius: 6,
-                cursor: 'pointer', fontSize: 13
+                cursor: 'pointer', fontSize: 13, marginLeft: 8
               }}>退出</button>
             </>
           ) : (
@@ -50,9 +63,11 @@ export default function Layout() {
           )}
         </div>
       </nav>
+
       <main style={{ flex: 1, maxWidth: 1200, margin: '0 auto', width: '100%', padding: '24px 16px' }}>
         <Outlet />
       </main>
+
       <footer style={{ background: '#1a1a2e', color: '#666', textAlign: 'center', padding: '16px', fontSize: 13 }}>
         © 2026 校园书市 · 让知识流转起来
       </footer>

@@ -46,7 +46,7 @@ export default function Publish() {
   const [form, setForm] = useState({
     isbn: '', title: '', author: '', publisher: '', price: '',
     originalPrice: '', condition: '九成新', category: '计算机',
-    tags: '', description: '', campus: '南校区', pickupLocation: '',
+    tags: '', description: '', qq: user?.qq || '', pickupLocation: '',
     coverUrl: ''
   })
   const [isbnLoading, setIsbnLoading] = useState(false)
@@ -62,14 +62,13 @@ export default function Publish() {
     const file = e.target.files[0]
     if (!file) return
     setUploading(true)
-    
+
     const formData = new FormData()
     formData.append('file', file)
-    // [重要] 这里填入你在 Cloudinary 后台创建的 Unsigned Upload Preset 名称
-    formData.append('upload_preset', 'books-upload') 
-    
+
+    formData.append('upload_preset', 'books-upload')
+
     try {
-      // [重要] 将 your_cloud_name 替换为你 Cloudinary 的 Cloud Name
       const res = await fetch('https://api.cloudinary.com/v1_1/dkm0g2s8q/image/upload', {
         method: 'POST',
         body: formData
@@ -140,7 +139,7 @@ export default function Publish() {
     <div style={{ maxWidth: 600, margin: '0 auto' }}>
       <h2 style={{ marginBottom: 24, fontSize: 22, fontWeight: 900 }}>📚 发布闲置书籍</h2>
       <div style={{ background: '#fff', borderRadius: 16, padding: 32, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
-       <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 24 }}>
           <label style={{ fontSize: 13, color: '#555', display: 'block', marginBottom: 6 }}>书籍照片</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {form.coverUrl && <img src={form.coverUrl} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8 }} />}
@@ -148,7 +147,7 @@ export default function Publish() {
           </div>
           {uploading && <div style={{ fontSize: 12, color: '#ff6b35', marginTop: 4 }}>正在上传照片...</div>}
         </div>
-       
+
         {/* ISBN */}
         <div style={{ background: '#fff8f5', border: '1px solid #ffe0d0', borderRadius: 12, padding: 16, marginBottom: 24 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#ff6b35', marginBottom: 10 }}>📱 ISBN自动识别</div>
@@ -207,14 +206,24 @@ export default function Publish() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label style={{ fontSize: 13, color: '#555', display: 'block', marginBottom: 6 }}>取货校区 *</label>
-                <select value={form.campus} onChange={e => setForm(p => ({ ...p, campus: e.target.value }))} style={inputStyle}>
-                  {['南校区', '北校区', '东校区', '西校区'].map(c => <option key={c}>{c}</option>)}
-                </select>
+                <label style={{ fontSize: 13, color: '#555', display: 'block', marginBottom: 6 }}>联系 QQ *</label>
+                <input
+                  value={form.qq}
+                  onChange={e => setForm(p => ({ ...p, qq: e.target.value }))}
+                  style={inputStyle}
+                  placeholder="请输入QQ号"
+                  required
+                />
               </div>
               <div>
-                <label style={{ fontSize: 13, color: '#555', display: 'block', marginBottom: 6 }}>取货地点</label>
-                <input value={form.pickupLocation} onChange={e => setForm(p => ({ ...p, pickupLocation: e.target.value }))} style={inputStyle} placeholder="如：图书馆门口" />
+                <label style={{ fontSize: 13, color: '#555', display: 'block', marginBottom: 6 }}>取货地点 *</label>
+                <input
+                  value={form.pickupLocation}
+                  onChange={e => setForm(p => ({ ...p, pickupLocation: e.target.value }))}
+                  style={inputStyle}
+                  placeholder="如：南区图书馆门口"
+                  required
+                />
               </div>
             </div>
             <div>

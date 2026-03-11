@@ -10,11 +10,32 @@ export default function BookDetail() {
   const [book, setBook] = useState(null)
   const [loading, setLoading] = useState(true)
   const [reserving, setReserving] = useState(false)
+  const [isFavorited, setIsFavorited] = useState(false)
   const [msg, setMsg] = useState('')
 
   useEffect(() => {
-    api.get(`/books/${id}`).then(res => setBook(res.data)).finally(() => setLoading(false))
+    api.get(`/books/${id}`).then(res => {
+      setBook(res.data)
+      // 假设后端在返回书籍详情时，会根据当前用户 token 判断并返回 isFavorited 字段
+      setIsFavorited(res.data.isFavorited || false)
+    }).finally(() => setLoading(false))
   }, [id])
+
+  // 新增：处理收藏/取消收藏
+  const handleToggleFavorite = async () => {
+    if (!user) { navigate('/login'); return }
+    try {
+      const res = await api.post('/favorites/toggle', { bookId: id })
+      setIsFavorited(res.data.isFavorited)
+      // 可选：展示一个简短的提示
+      if (res.data.isFavorited) {
+        setMsg('❤️ 已加入收藏夹')
+        setTimeout(() => setMsg(''), 2000)
+      }
+    } catch (e) {
+      console.error('收藏操作失败', e)
+    }
+  }
 
   const handleReserve = async () => {
     if (!user) { navigate('/login'); return }
@@ -35,31 +56,32 @@ export default function BookDetail() {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
       <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#ff6b35', cursor: 'pointer', fontSize: 14, marginBottom: 16, fontWeight: 600 }}>← 返回列表</button>
-      
+
       <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,0.05)', display: 'flex', flexWrap: 'wrap' }}>
-        
+
         {/* 左侧：书籍封面区域 - 优化图片显示 */}
-        <div style={{ 
-          background: '#f8f8f8', 
-          width: '320px', 
-          minHeight: '400px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
+        <div style={{
+          background: '#f8f8f8',
+          width: '320px',
+          minHeight: '400px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           flexShrink: 0,
           borderRight: '1px solid #f0f0f0'
         }}>
           {book.coverUrl ? (
-            <img 
-              src={book.coverUrl} 
+            <img
+              src={book.coverUrl}
               alt={book.title}
-              style={{ 
-                width: '100%', 
-                height: '100%', 
+              style={{
+                width: '100%',
+                height: '100%',
                 maxHeight: '450px',
-                objectFit: 'contain', 
-                padding: '20px' 
-              }} 
+                // 关键修改：使用 contain 确保图片不被裁切
+                objectFit: 'contain',
+                padding: '20px'
+              }}
             />
           ) : (
             <div style={{ fontSize: 100 }}>📚</div>
@@ -75,6 +97,28 @@ export default function BookDetail() {
           </div>
 
           <h1 style={{ fontSize: 26, fontWeight: 900, marginBottom: 10, color: '#1a1a2e' }}>{book.title}</h1>
+          <button
+            onClick={handleToggleFavorite}
+            style={{
+              background: isFavorited ? '#fff1f0' : '#f5f5f5',
+              border: `1px solid ${isFavorited ? '#ffa39e' : '#e8e8e8'}`,
+              borderRadius: '50%',
+              width: 44,
+              height: 44,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: 20,
+              transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+              boxShadow: isFavorited ? '0 2px 8px rgba(255,77,79,0.2)' : 'none'
+            }}
+            title={isFavorited ? "取消收藏" : "加入收藏"}
+          >
+            <span style={{ transform: isFavorited ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s' }}>
+              {isFavorited ? '❤️' : '🤍'}
+            </span>
+          </button>
           <p style={{ color: '#666', fontSize: 15, marginBottom: 6 }}>{book.author} 著 · {book.publisher}</p>
           <p style={{ color: '#aaa', fontSize: 13, marginBottom: 24 }}>条形码 (ISBN): {book.isbn || '暂无'}</p>
 
@@ -83,11 +127,12 @@ export default function BookDetail() {
             {book.originalPrice && <span style={{ fontSize: 18, color: '#bbb', textDecoration: 'line-through' }}>¥{book.originalPrice}</span>}
           </div>
 
+          {/* 信息网格*/}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 30 }}>
             {[
-              ['🐧 卖家QQ', book.seller?.qq || '未填写'], 
-              ['🏫 取货地点', book.pickupLocation || '联系卖家'], 
-              ['👁 浏览次数', `${book.views} 次`], 
+              ['🐧 卖家QQ', book.seller?.qq || '未填写'],
+              ['🏫 取货地点', book.pickupLocation || '面议'],
+              ['👁 浏览次数', `${book.views} 次`],
               ['⏰ 发布时间', new Date(book.createdAt).toLocaleDateString()]
             ].map(([k, v]) => (
               <div key={k} style={{ background: '#f9f9f9', borderRadius: 10, padding: '12px 16px', border: '1px solid #f0f0f0' }}>
@@ -118,9 +163,9 @@ export default function BookDetail() {
           {msg && <div style={{ padding: '14px', borderRadius: 10, marginBottom: 20, fontSize: 14, fontWeight: 600, textAlign: 'center', background: msg.startsWith('✅') ? '#ecfdf5' : '#fef2f2', color: msg.startsWith('✅') ? '#059669' : '#dc2626', border: '1px solid currentColor' }}>{msg}</div>}
 
           {book.status === 'AVAILABLE' ? (
-            <button 
-              onClick={handleReserve} 
-              disabled={reserving || book.seller?.id === user?.id} 
+            <button
+              onClick={handleReserve}
+              disabled={reserving || book.seller?.id === user?.id}
               style={{
                 width: '100%', padding: '18px', background: '#ff6b35', color: '#fff',
                 border: 'none', borderRadius: 12, fontSize: 17, fontWeight: 800, cursor: 'pointer',

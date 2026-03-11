@@ -73,81 +73,100 @@ export default function Profile() {
   return (
     <div style={{ maxWidth: 700, margin: '0 auto' }}>
       {/* 用户信息卡片  */}
-      <div style={{ background: '#1a1a2e', borderRadius: 16, padding: '28px 32px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 20 }}>
-        <div style={{
-          background: '#1a1a2e',
-          borderRadius: 16,
-          padding: '28px 32px',
-          marginBottom: 24,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between', // 关键：将内容撑开到两端
-          gap: 20
-        }}>
-          {/* 左侧区域：头像 + 信息（名字、信用分、编辑） */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-            <div style={{
-              width: 64, height: 64, borderRadius: '50%',
-              background: '#ff6b35', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', fontSize: 28
-            }}>
-              👤
-            </div>
+<div style={{
+  background: '#1a1a2e',
+  borderRadius: 16,
+  padding: '28px 32px',
+  marginBottom: 24,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between'
+}}>
 
-            <div>
-              <div style={{ fontSize: 20, fontWeight: 900, color: '#fff' }}>{user?.nickname}</div>
+  {/* 左侧：退出登录 */}
+  <button
+    onClick={handleLogout}
+    style={{
+      background: 'transparent',
+      border: '1px solid #555',
+      color: '#aaa',
+      padding: '8px 16px',
+      borderRadius: 8,
+      cursor: 'pointer',
+      fontSize: 13,
+      whiteSpace: 'nowrap'
+    }}
+  >
+    退出登录
+  </button>
 
-              {/* 你要的两排靠左对齐的信息 */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6, marginTop: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{
-                    background: 'rgba(255, 107, 53, 0.2)', // 稍微调深一点在深色背景下更好看
-                    color: '#ff6b35',
-                    fontSize: 11,
-                    padding: '2px 8px',
-                    borderRadius: 4,
-                    fontWeight: 700
-                  }}>
-                    🏆 信用分: {user?.creditScore ?? 100}
-                  </span>
-                </div>
-                <Link
-                  to="/edit-profile"
-                  style={{
-                    color: '#888',
-                    fontSize: 12,
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4
-                  }}
-                  onMouseEnter={(e) => e.target.style.color = '#ff6b35'}
-                  onMouseLeave={(e) => e.target.style.color = '#888'}
-                >
-                  ⚙️ 编辑个人资料
-                </Link>
-              </div>
-            </div>
-          </div>
 
-          {/* 右侧区域：退出登录按钮 */}
-          <button
-            onClick={handleLogout}
-            style={{
-              background: 'transparent',
-              border: '1px solid #555',
-              color: '#aaa',
-              padding: '8px 16px',
-              borderRadius: 8,
-              cursor: 'pointer',
-              fontSize: 13,
-              whiteSpace: 'nowrap' // 防止按钮文字换行
-            }}
-          >
-            退出登录
-          </button>
-        </div>
+  {/* 右侧：头像 + 用户信息 */}
+  <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+
+    <div style={{
+      width: 64,
+      height: 64,
+      borderRadius: '50%',
+      background: '#ff6b35',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 28
+    }}>
+      👤
+    </div>
+
+    <div>
+      <div style={{
+        fontSize: 20,
+        fontWeight: 900,
+        color: '#fff'
+      }}>
+        {user?.nickname}
       </div>
+
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 6,
+        marginTop: 8
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{
+            background: 'rgba(255,107,53,0.2)',
+            color: '#ff6b35',
+            fontSize: 11,
+            padding: '2px 8px',
+            borderRadius: 4,
+            fontWeight: 700
+          }}>
+            🏆 信用分: {user?.creditScore ?? 100}
+          </span>
+        </div>
+
+        <Link
+          to="/edit-profile"
+          style={{
+            color: '#888',
+            fontSize: 12,
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4
+          }}
+          onMouseEnter={(e) => e.target.style.color = '#ff6b35'}
+          onMouseLeave={(e) => e.target.style.color = '#888'}
+        >
+          ⚙️ 编辑个人资料
+        </Link>
+      </div>
+
+    </div>
+  </div>
+
+</div>
 
       {/* 标签切换导航 */}
       <div style={{ display: 'flex', gap: 20, borderBottom: '1px solid #eee', marginBottom: 20, padding: '0 10px' }}>

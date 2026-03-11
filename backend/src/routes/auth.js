@@ -7,7 +7,7 @@ const auth = require('../middleware/auth')
 // 1. 注册接口
 router.post('/register', async (req, res) => {
   try {
-    // 删除了 campus，增加了 qq
+    
     const { studentId, email, password, nickname, department, qq } = req.body
     if (!studentId || !email || !password || !nickname) {
       return res.status(400).json({ error: '请填写完整信息' })
@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
       { expiresIn: '7d' }
     )
 
-    // 返回给前端的信息要包含 isAdmin 和 qq
+    // 返回给前端的信息
     res.json({
       token,
       user: {

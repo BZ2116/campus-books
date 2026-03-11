@@ -15,6 +15,11 @@ const adminOnly = (req, res, next) => {
 router.get('/books', auth, adminOnly, async (req, res) => {
   try {
     const books = await prisma.book.findMany({
+      where: {
+        status: {
+          in: ['AVAILABLE', 'RESERVED']
+        }
+      },
       include: {
         seller: { 
           select: { studentId: true, nickname: true }
@@ -22,25 +27,42 @@ router.get('/books', auth, adminOnly, async (req, res) => {
       },
       orderBy: { createdAt: 'desc' }
     })
-    
-    // 调试用：在后端终端看一眼到底查出来几条
-    console.log("查询到的书籍数量:", books.length);
-    
-    // 明确指定返回 200 状态码
-    return res.status(200).json(books); 
+
+    console.log("查询到的书籍数量:", books.length)
+
+    return res.status(200).json(books)
   } catch (e) {
-    console.error("管理后台查询失败:", e);
-    res.status(500).json({ error: '获取数据失败' });
+    console.error("管理后台查询失败:", e)
+    res.status(500).json({ error: '获取数据失败' })
   }
 })
 // DELETE /api/admin/books/:id - 管理员强行下架
 router.delete('/books/:id', auth, adminOnly, async (req, res) => {
   try {
+
+    const book = await prisma.book.findUnique({
+      where: { id: req.params.id }
+    })
+
+    if (!book) {
+      return res.status(404).json({ error: '书籍不存在' })
+    }
+
+    // 只允许下架 AVAILABLE
+    if (book.status !== 'AVAILABLE') {
+      return res.status(400).json({
+        error: '该书已被预约或已完成交易，无法强制下架'
+      })
+    }
+
     await prisma.book.delete({
       where: { id: req.params.id }
     })
+
     res.json({ message: '下架成功' })
+
   } catch (e) {
+    console.error(e)
     res.status(500).json({ error: '删除失败' })
   }
 })

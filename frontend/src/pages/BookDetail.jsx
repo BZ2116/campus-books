@@ -96,29 +96,42 @@ export default function BookDetail() {
             {book.tags?.map(t => <span key={t} style={{ background: '#f5f5f5', color: '#666', fontSize: 12, padding: '4px 12px', borderRadius: 50 }}>#{t}</span>)}
           </div>
 
-          <h1 style={{ fontSize: 26, fontWeight: 900, marginBottom: 10, color: '#1a1a2e' }}>{book.title}</h1>
-          <button
-            onClick={handleToggleFavorite}
-            style={{
-              background: isFavorited ? '#fff1f0' : '#f5f5f5',
-              border: `1px solid ${isFavorited ? '#ffa39e' : '#e8e8e8'}`,
-              borderRadius: '50%',
-              width: 44,
-              height: 44,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              fontSize: 20,
-              transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-              boxShadow: isFavorited ? '0 2px 8px rgba(255,77,79,0.2)' : 'none'
-            }}
-            title={isFavorited ? "取消收藏" : "加入收藏"}
-          >
-            <span style={{ transform: isFavorited ? 'scale(1.1)' : 'scale(1)', transition: 'transform 0.2s' }}>
-              {isFavorited ? '❤️' : '🤍'}
-            </span>
-          </button>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 10
+          }}>
+            <h1 style={{ fontSize: 26, fontWeight: 900, color: '#1a1a2e' }}>
+              {book.title}
+            </h1>
+
+            <button
+              onClick={handleToggleFavorite}
+              style={{
+                background: isFavorited ? '#fff1f0' : '#f5f5f5',
+                border: `1px solid ${isFavorited ? '#ffa39e' : '#e8e8e8'}`,
+                borderRadius: '50%',
+                width: 44,
+                height: 44,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: 20,
+                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                boxShadow: isFavorited ? '0 2px 8px rgba(255,77,79,0.2)' : 'none'
+              }}
+              title={isFavorited ? "取消收藏" : "加入收藏"}
+            >
+              <span style={{
+                transform: isFavorited ? 'scale(1.1)' : 'scale(1)',
+                transition: 'transform 0.2s'
+              }}>
+                {isFavorited ? '❤️' : '🤍'}
+              </span>
+            </button>
+          </div>
           <p style={{ color: '#666', fontSize: 15, marginBottom: 6 }}>{book.author} 著 · {book.publisher}</p>
           <p style={{ color: '#aaa', fontSize: 13, marginBottom: 24 }}>条形码 (ISBN): {book.isbn || '暂无'}</p>
 

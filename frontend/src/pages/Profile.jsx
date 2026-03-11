@@ -9,11 +9,11 @@ export default function Profile() {
   const [myBooks, setMyBooks] = useState([])
   const [favorites, setFavorites] = useState([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('posts') 
+  const [activeTab, setActiveTab] = useState('posts')
 
   useEffect(() => {
     if (!user) { navigate('/login'); return }
-    
+
     const fetchData = async () => {
       setLoading(true)
       try {
@@ -22,7 +22,7 @@ export default function Profile() {
           api.get('/books', { params: { limit: 100 } }),
           api.get('/favorites')
         ])
-        
+
         setMyBooks(booksRes.data.books.filter(b => b.sellerId === user.id))
         // 注意：收藏接口返回的通常是 [{id, book: {...}}, ...]，我们需要提取里面的 book
         setFavorites(favsRes.data.map(f => f.book))
@@ -38,7 +38,7 @@ export default function Profile() {
 
   const handleLogout = () => { logout(); navigate('/login') }
 
-  // 渲染书籍列表的通用组件（内部逻辑复用）
+
   const renderBookList = (list, emptyMsg) => {
     if (list.length === 0) return (
       <div style={{ textAlign: 'center', padding: '40px 0', color: '#888', background: '#fff', borderRadius: 12 }}>
@@ -52,7 +52,7 @@ export default function Profile() {
         {list.map(book => (
           <Link key={book.id} to={`/book/${book.id}`} style={{ textDecoration: 'none' }}>
             <div style={{ background: '#fff', borderRadius: 10, padding: '14px 16px', display: 'flex', gap: 14, alignItems: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
-              <div style={{ fontSize: 32 }}>{book.coverUrl ? <img src={book.coverUrl} style={{width: 32, height: 42, objectFit: 'cover', borderRadius: 4}} /> : '📚'}</div>
+              <div style={{ fontSize: 32 }}>{book.coverUrl ? <img src={book.coverUrl} style={{ width: 32, height: 42, objectFit: 'cover', borderRadius: 4 }} /> : '📚'}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 14, color: '#333' }}>{book.title}</div>
                 <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>{book.condition} · {book.pickupLocation || '校内'}</div>
@@ -72,24 +72,49 @@ export default function Profile() {
 
   return (
     <div style={{ maxWidth: 700, margin: '0 auto' }}>
-      {/* 用户信息卡片 (保持不变) */}
+      {/* 用户信息卡片  */}
       <div style={{ background: '#1a1a2e', borderRadius: 16, padding: '28px 32px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 20 }}>
         <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#ff6b35', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>👤</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 20, fontWeight: 900, color: '#fff' }}>{user?.nickname}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
-             <span style={{ fontSize: 12, color: '#aaa' }}>信用分: {user?.creditScore}</span>
-             <Link to="/edit-profile" style={{ color: '#ff6b35', fontSize: 12, textDecoration: 'none' }}>编辑资料</Link>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6, marginTop: 8 }}>
+          {/* 第一排：信用分显示 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{
+              background: 'rgba(255, 107, 53, 0.1)',
+              color: '#ff6b35',
+              fontSize: 11,
+              padding: '2px 8px',
+              borderRadius: 4,
+              fontWeight: 700
+            }}>
+              🏆 信用分: {user?.creditScore ?? 100}
+            </span>
           </div>
+
+          {/* 第二排：编辑资料链接 */}
+          <Link
+            to="/edit-profile"
+            style={{
+              color: '#888',
+              fontSize: 12,
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}
+            onMouseEnter={(e) => e.target.style.color = '#ff6b35'}
+            onMouseLeave={(e) => e.target.style.color = '#888'}
+          >
+            ⚙️ 编辑个人资料
+          </Link>
         </div>
         <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid #555', color: '#aaa', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 13 }}>退出登录</button>
       </div>
 
-      {/* 新增：标签切换导航 */}
+      {/* 标签切换导航 */}
       <div style={{ display: 'flex', gap: 20, borderBottom: '1px solid #eee', marginBottom: 20, padding: '0 10px' }}>
-        <button 
+        <button
           onClick={() => setActiveTab('posts')}
-          style={{ 
+          style={{
             padding: '12px 4px', background: 'none', border: 'none', cursor: 'pointer',
             fontSize: 15, fontWeight: 700, color: activeTab === 'posts' ? '#ff6b35' : '#888',
             borderBottom: activeTab === 'posts' ? '3px solid #ff6b35' : '3px solid transparent'
@@ -97,9 +122,9 @@ export default function Profile() {
         >
           我发布的 ({myBooks.length})
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('favorites')}
-          style={{ 
+          style={{
             padding: '12px 4px', background: 'none', border: 'none', cursor: 'pointer',
             fontSize: 15, fontWeight: 700, color: activeTab === 'favorites' ? '#ff6b35' : '#888',
             borderBottom: activeTab === 'favorites' ? '3px solid #ff6b35' : '3px solid transparent'
@@ -120,7 +145,7 @@ export default function Profile() {
       {loading ? (
         <div style={{ textAlign: 'center', padding: 40, color: '#888' }}>加载中...</div>
       ) : (
-        activeTab === 'posts' 
+        activeTab === 'posts'
           ? renderBookList(myBooks, '还没有发布书籍')
           : renderBookList(favorites, '还没有收藏任何书籍')
       )}

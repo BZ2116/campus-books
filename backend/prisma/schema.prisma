@@ -16,7 +16,6 @@ model User {
   passwordHash String
   nickname     String
   department   String?
-  campus       String?
   creditScore  Int      @default(100)
   createdAt    DateTime @default(now())
 

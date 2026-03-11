@@ -74,7 +74,6 @@ export default function Profile() {
     <div style={{ maxWidth: 700, margin: '0 auto' }}>
       {/* 用户信息卡片  */}
       <div style={{ background: '#1a1a2e', borderRadius: 16, padding: '28px 32px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 20 }}>
-        <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#ff6b35', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>👤</div>
         <div style={{
           background: '#1a1a2e',
           borderRadius: 16,
@@ -148,7 +147,6 @@ export default function Profile() {
             退出登录
           </button>
         </div>
-        <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid #555', color: '#aaa', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 13 }}>退出登录</button>
       </div>
 
       {/* 标签切换导航 */}

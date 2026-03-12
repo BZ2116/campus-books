@@ -16,7 +16,9 @@ export default function BookDetail() {
     price: '',
     condition: '',
     description: '',
-    pickupLocation: ''
+    pickupLocation: '',
+    ISBN:'',
+    coverUrl:''
   })
   const [msg, setMsg] = useState('')
 
@@ -35,7 +37,7 @@ export default function BookDetail() {
     }).finally(() => setLoading(false))
   }, [id])
 
-  // 新增：处理收藏/取消收藏
+
   const handleToggleFavorite = async () => {
     if (!user) { navigate('/login'); return }
     try {
@@ -67,19 +69,12 @@ export default function BookDetail() {
   const handleSaveEdit = async () => {
 
     try {
-
       const res = await api.put(`/books/${id}`, editData)
-
       setBook(res.data)
-
       setEditing(false)
-
       setMsg('✅ 修改成功')
-
     } catch (e) {
-
       setMsg('❌ 修改失败')
-
     }
 
   }
@@ -88,17 +83,11 @@ export default function BookDetail() {
     if (!window.confirm('确定要下架这本书吗？')) return
 
     try {
-
       await api.delete(`/books/${id}`)
-
       alert('书籍已下架')
-
       navigate('/')
-
     } catch {
-
       alert('下架失败')
-
     }
 
   }

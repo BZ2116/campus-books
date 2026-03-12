@@ -89,14 +89,36 @@ export default function Home() {
                     color: '#000', fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4
                   }}>{book.condition}</span>
                 </div>
-                <div style={{ padding: '12px' }}>
+                <div style={{
+                  padding: '12px',
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}>
                   <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, marginBottom: 4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{book.title}</div>
-                  <div style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>{book.author || '未知作者'}</div>
+                  <div style={{
+                    fontSize: 12,
+                    color: '#888',
+                    marginBottom: 8,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {book.author || '未知作者'}
+                  </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: 18, fontWeight: 900, color: '#ff6b35' }}>¥{book.price}</span>
                     <span style={{ fontSize: 11, color: '#aaa' }}>{book.campus}</span>
                   </div>
-                  <div style={{ fontSize: 11, color: '#aaa', marginTop: 4 }}>
+                  <div style={{
+                    fontSize: 11,
+                    color: '#aaa',
+                    marginTop: 4,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
                     {book.seller?.nickname} · 👁 {book.views}
                   </div>
                 </div>

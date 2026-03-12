@@ -12,6 +12,7 @@ export default function BookDetail() {
   const [reserving, setReserving] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
   const [editing, setEditing] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [editData, setEditData] = useState({
     price: '',
     condition: '',
@@ -92,6 +93,40 @@ export default function BookDetail() {
       alert('下架失败')
     }
 
+  }
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    setUploading(true)
+
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('upload_preset', 'books-upload')
+
+    try {
+      const res = await fetch(
+        'https://api.cloudinary.com/v1_1/dkm0g2s8q/image/upload',
+        {
+          method: 'POST',
+          body: formData
+        }
+      )
+
+      const data = await res.json()
+
+      setEditData(prev => ({
+        ...prev,
+        coverUrl: data.secure_url
+      }))
+
+      setMsg('✅ 图片上传成功')
+
+    } catch (e) {
+      alert('图片上传失败，请检查网络')
+    } finally {
+      setUploading(false)
+    }
   }
 
   if (loading) return <div style={{ textAlign: 'center', padding: 60, color: '#888' }}>加载中...</div>
@@ -350,11 +385,33 @@ export default function BookDetail() {
               <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
                 封面图片URL
               </label>
+              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                书籍封面
+              </label>
+
               <input
-                value={editData.coverUrl}
-                onChange={e => setEditData({ ...editData, coverUrl: e.target.value })}
-                style={inputStyle}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ marginBottom: 10 }}
               />
+
+              {uploading && (
+                <div style={{ fontSize: 12, color: '#999', marginBottom: 10 }}>
+                  图片上传中...
+                </div>
+              )}
+
+              {editData.coverUrl && (
+                <img
+                  src={editData.coverUrl}
+                  style={{
+                    width: 120,
+                    borderRadius: 8,
+                    marginBottom: 10
+                  }}
+                />
+              )}
 
               <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
 

@@ -85,7 +85,6 @@ export default function Publish() {
     if (!form.isbn) return
     setIsbnLoading(true)
     setIsbnMsg('')
-
     // 第一步：查本地库
     const local = LOCAL_BOOKS[form.isbn.trim()]
     if (local) {

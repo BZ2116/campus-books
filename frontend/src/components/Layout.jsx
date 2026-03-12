@@ -39,10 +39,9 @@ export default function Layout() {
 
           {user ? (
             <>
-              {/* --- 新增：管理员入口 --- */}
               {user.isAdmin && (
                 <Link to="/admin" style={{
-                  color: '#fbbf24', // 使用亮黄色区分普通链接
+                  color: '#fbbf24', 
                   textDecoration: 'none',
                   fontSize: 14,
                   fontWeight: 700,

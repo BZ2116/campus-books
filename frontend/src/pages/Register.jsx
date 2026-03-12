@@ -54,7 +54,6 @@ export default function Register() {
             </div>
           ))}
 
-
           <button type="submit" disabled={loading} style={{
             width: '100%', padding: '12px', background: '#ff6b35', color: '#fff',
             border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: 'pointer'
@@ -64,9 +63,7 @@ export default function Register() {
         <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: '#888' }}>
           已有账号？<Link to="/login" style={{ color: '#ff6b35', fontWeight: 600 }}>立即登录</Link>
         </p>
-
       </div>
-
     </div>
 
   )

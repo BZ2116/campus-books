@@ -4,22 +4,49 @@ import api from '../api'
 import useStore from '../store'
 
 export default function Admin() {
+
   const { user } = useStore()
   const navigate = useNavigate()
+
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
 
-
   useEffect(() => {
+
     if (!user || !user.isAdmin) {
       navigate('/')
       return
     }
+
     fetchAdminData()
+
   }, [user])
 
+
   const fetchAdminData = async () => {
-    if (books.status !== 'AVAILABLE') {
+
+    try {
+
+      const res = await api.get('/admin/books')
+
+      setBooks(res.data)
+
+    } catch {
+
+      alert('获取管理数据失败')
+
+    } finally {
+
+      setLoading(false)
+
+    }
+
+  }
+
+
+  const handleDelete = async (book) => {
+
+    if (book.status !== 'AVAILABLE') {
       alert('该书籍已被预约，无法强制下架')
       return
     }
@@ -27,28 +54,34 @@ export default function Admin() {
     if (!window.confirm('确定要强行下架该书籍吗？')) return
 
     try {
+
       await api.delete(`/admin/books/${book.id}`)
 
-      // 更新本地状态
       setBooks(prev => prev.filter(b => b.id !== book.id))
 
       alert('下架成功')
 
     } catch {
+
       alert('下架失败')
+
     }
+
   }
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('确定要强行下架该书籍吗？')) return
-    await api.delete(`/admin/books/${id}`)
-    setBooks(books.filter(b => b.id !== id))
-  }
 
-  if (loading) return <div style={{ textAlign: 'center', marginTop: 50 }}>加载管理数据...</div>
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: 50 }}>
+        加载管理数据...
+      </div>
+    )
+  }
 
   return (
+
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: 20 }}>
+
       <h2 style={{ marginBottom: 20 }}>
         🛡️ 平台管理后台
       </h2>
@@ -74,7 +107,9 @@ export default function Admin() {
         </thead>
 
         <tbody>
+
           {books.map(b => (
+
             <tr key={b.id} style={{ borderBottom: '1px solid #eee' }}>
 
               <td style={tdStyle}>
@@ -145,13 +180,21 @@ export default function Admin() {
               </td>
 
             </tr>
+
           ))}
+
         </tbody>
 
       </table>
 
     </div>
+
   )
+
 }
 
-const tdStyle = { padding: '12px 15px', textAlign: 'left', fontSize: 14 }
+const tdStyle = {
+  padding: '12px 15px',
+  textAlign: 'left',
+  fontSize: 14
+}

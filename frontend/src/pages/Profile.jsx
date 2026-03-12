@@ -24,7 +24,6 @@ export default function Profile() {
         ])
 
         setMyBooks(booksRes.data.books.filter(b => b.sellerId === user.id))
-        // 注意：收藏接口返回的通常是 [{id, book: {...}}, ...]，我们需要提取里面的 book
         setFavorites(favsRes.data.map(f => f.book))
       } catch (e) {
         console.error("加载数据失败", e)

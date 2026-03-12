@@ -312,31 +312,39 @@ export default function BookDetail() {
 
               <h3 style={{ marginBottom: 20 }}>编辑书籍</h3>
 
+              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                价格
+              </label>
               <input
                 value={editData.price}
                 onChange={e => setEditData({ ...editData, price: e.target.value })}
-                placeholder="价格"
                 style={inputStyle}
               />
 
+              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                成色
+              </label>
               <input
                 value={editData.condition}
                 onChange={e => setEditData({ ...editData, condition: e.target.value })}
-                placeholder="成色"
                 style={inputStyle}
               />
 
+              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                取货地点
+              </label>
               <input
                 value={editData.pickupLocation}
                 onChange={e => setEditData({ ...editData, pickupLocation: e.target.value })}
-                placeholder="取货地点"
                 style={inputStyle}
               />
 
+              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                书籍描述
+              </label>
               <textarea
                 value={editData.description}
                 onChange={e => setEditData({ ...editData, description: e.target.value })}
-                placeholder="书籍描述"
                 style={{ ...inputStyle, height: 80 }}
               />
 

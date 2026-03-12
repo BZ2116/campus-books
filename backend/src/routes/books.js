@@ -86,5 +86,63 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     res.status(500).json({ error: '操作失败' })
   }
 })
+// 修改书籍信息
+router.put('/:id', authMiddleware, async (req, res) => {
+  try {
+
+    const { id } = req.params
+
+    const {
+      price,
+      originalPrice,
+      condition,
+      description,
+      pickupLocation,
+      category,
+      tags
+    } = req.body
+
+    const book = await prisma.book.findUnique({
+      where: { id }
+    })
+
+    if (!book) {
+      return res.status(404).json({ error: '书籍不存在' })
+    }
+
+    // 只有发布者可以修改
+    if (book.sellerId !== req.user.id) {
+      return res.status(403).json({ error: '无权修改该书籍' })
+    }
+
+    // 已成交或已预约不允许修改
+    if (book.status !== 'AVAILABLE') {
+      return res.status(400).json({ error: '当前状态不可修改' })
+    }
+
+    const updatedBook = await prisma.book.update({
+      where: { id },
+      data: {
+        price: price ? Number(price) : book.price,
+        originalPrice: originalPrice ? Number(originalPrice) : book.originalPrice,
+        condition: condition ?? book.condition,
+        description: description ?? book.description,
+        pickupLocation: pickupLocation ?? book.pickupLocation,
+        category: category ?? book.category,
+        tags: tags ?? book.tags
+      }
+    })
+
+    res.json(updatedBook)
+
+  } catch (e) {
+
+    res.status(500).json({
+      error: '修改失败',
+      detail: e.message
+    })
+
+  }
+})
 
 module.exports = router

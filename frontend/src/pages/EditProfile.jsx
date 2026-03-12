@@ -15,19 +15,25 @@ export default function EditProfile() {
 
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        const res = await api.put('/auth/profile', {
-            nickname,
-            email,
-            qq,
-            department,
-        })
-        const updatedUser = res.data.user || res.data
-        setUser(updatedUser)
-        console.log(updatedUser);
 
-        alert('修改成功')
-        navigate('/profile')
+        e.preventDefault()
+
+        try {
+
+            const res = await api.put('/auth/profile', {
+                nickname,
+                email,
+                qq,
+                department,
+            })
+            const updatedUser = res.data
+            setUser(updatedUser)
+            alert('修改成功')
+            navigate('/profile')
+        } catch (err) {
+            console.error(err)
+            alert('修改失败')
+        }
 
     }
 

@@ -20,7 +20,7 @@ export default function Reservations() {
 
   useEffect(() => {
     if (!user) { navigate('/login'); return }
-    api.get('/reservations/my').then(res => setList(res.data)).finally(() => setLoading(false))
+    api.get('/reservations/me').then(res => setList(res.data)).finally(() => setLoading(false))
   }, [])
 
   const handleComplete = async (id) => {
@@ -28,7 +28,7 @@ export default function Reservations() {
       await api.put(`/reservations/${id}/complete`, { pickupCode: codeInput })
       setMsg('✅ 交易完成！')
       setCompleting(null)
-      const res = await api.get('/reservations/my')
+      const res = await api.get('/reservations/me')
       setList(res.data)
     } catch (e) {
       setMsg(`❌ ${e.response?.data?.error || '操作失败'}`)
@@ -39,7 +39,7 @@ export default function Reservations() {
     if (!confirm('确认取消预约？')) return
     try {
       await api.put(`/reservations/${id}/cancel`)
-      const res = await api.get('/reservations/my')
+      const res = await api.get('/reservations/me')
       setList(res.data)
     } catch (e) {
       alert(e.response?.data?.error || '取消失败')

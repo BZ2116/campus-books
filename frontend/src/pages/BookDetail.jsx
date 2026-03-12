@@ -223,7 +223,7 @@ export default function BookDetail() {
             <div style={{ width: 48, height: 48, background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>👤</div>
             <div>
               <div style={{ fontWeight: 800, fontSize: 16 }}>{book.seller?.nickname}</div>
-              <div style={{ fontSize: 12, color: '#667eea' }}>{book.seller?.department} · 信用分 {book.seller?.creditScore}</div>
+              <div style={{ fontSize: 12, color: '#667eea' }}>{book.seller?.department} 信用分 {book.seller?.creditScore}</div>
             </div>
           </div>
 

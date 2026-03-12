@@ -90,8 +90,8 @@ router.get('/me', require('./../../src/middleware/auth'), async (req, res) => {
         email: true,
         studentId: true,
         department: true,
-        qq: true, // 增加 qq
-        isAdmin: true, // 增加 isAdmin
+        qq: true, 
+        isAdmin: true, 
         creditScore: true,
         createdAt: true
       }

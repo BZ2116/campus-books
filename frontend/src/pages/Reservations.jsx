@@ -20,7 +20,7 @@ export default function Reservations() {
 
   useEffect(() => {
     if (!user) { navigate('/login'); return }
-    api.get('/reservations/me').then(res => setList(res.data)).finally(() => setLoading(false))
+    api.get('/reservations/my').then(res => setList(res.data)).finally(() => setLoading(false))
   }, [])
 
   const handleComplete = async (id) => {

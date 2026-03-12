@@ -52,11 +52,23 @@ router.delete('/books/:id', auth, adminOnly, async (req, res) => {
       })
     }
 
+    // 查询卖家
+    const seller = await prisma.user.findUnique({
+      where: { id: book.sellerId }
+    })
+
+    const newCredit = Math.max(0, seller.creditScore - 5)
+
+    await prisma.user.update({
+      where: { id: seller.id },
+      data: { creditScore: newCredit }
+    })
+
     await prisma.book.delete({
       where: { id: req.params.id }
     })
 
-    res.json({ message: '下架成功' })
+    res.json({ message: '下架成功，卖家信用 -5' })
 
   } catch (e) {
     console.error(e)

@@ -50,15 +50,55 @@ router.get('/my', authMiddleware, async (req, res) => {
 router.put('/:id/complete', authMiddleware, async (req, res) => {
   try {
     const { pickupCode } = req.body
-    const reservation = await prisma.reservation.findUnique({ where: { id: req.params.id } })
+
+    const reservation = await prisma.reservation.findUnique({
+      where: { id: req.params.id },
+      include: { book: true }
+    })
+
     if (!reservation) return res.status(404).json({ error: '预约不存在' })
     if (reservation.pickupCode !== pickupCode) return res.status(400).json({ error: '取货码错误' })
     if (reservation.status !== 'PENDING') return res.status(400).json({ error: '预约状态异常' })
 
-    await prisma.reservation.update({ where: { id: req.params.id }, data: { status: 'COMPLETED' } })
-    await prisma.book.update({ where: { id: reservation.bookId }, data: { status: 'SOLD' } })
-    res.json({ message: '交易完成' })
+    // 更新预约状态
+    await prisma.reservation.update({
+      where: { id: req.params.id },
+      data: { status: 'COMPLETED' }
+    })
+
+    // 更新书籍状态
+    await prisma.book.update({
+      where: { id: reservation.bookId },
+      data: { status: 'SOLD' }
+    })
+
+    // 查询买卖双方
+    const seller = await prisma.user.findUnique({
+      where: { id: reservation.book.sellerId }
+    })
+
+    const buyer = await prisma.user.findUnique({
+      where: { id: reservation.buyerId }
+    })
+
+    // ⭐ 计算信用（上限100）
+    const newSellerCredit = Math.min(100, seller.creditScore + 2)
+    const newBuyerCredit = Math.min(100, buyer.creditScore + 2)
+
+    await prisma.user.update({
+      where: { id: seller.id },
+      data: { creditScore: newSellerCredit }
+    })
+
+    await prisma.user.update({
+      where: { id: buyer.id },
+      data: { creditScore: newBuyerCredit }
+    })
+
+    res.json({ message: '交易完成，双方信用 +2' })
+
   } catch (e) {
+    console.error(e)
     res.status(500).json({ error: '操作失败' })
   }
 })
@@ -71,14 +111,10 @@ router.put('/:id/cancel', authMiddleware, async (req, res) => {
 
     const reservation = await prisma.reservation.findUnique({
       where: { id: req.params.id },
-      select: { id: true, buyerId: true, status: true, bookId: true }
+      include: { book: true }
     })
 
     if (!reservation) return res.status(404).json({ error: '预约不存在' })
-
-    console.log('数据库中 buyerId:', reservation.buyerId)
-    console.log('类型对比 buyerId === req.user.id:', reservation.buyerId === req.user.id)
-    console.log('字符串安全对比 String(buyerId) === String(user.id):', String(reservation.buyerId) === String(req.user?.id || req.user?._id))
 
     if (String(reservation.buyerId) !== String(req.user?.id || req.user?._id)) {
       return res.status(403).json({ error: '无权操作' })
@@ -88,16 +124,53 @@ router.put('/:id/cancel', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: '预约状态异常，无法取消' })
     }
 
+    // ⭐ 计算预约时间
+    const now = new Date()
+    const createdAt = new Date(reservation.createdAt)
+
+    const diffHours = (now - createdAt) / (1000 * 60 * 60)
+
+    // ⭐ 超过3小时扣信用
+    if (diffHours >= 3) {
+
+      const seller = await prisma.user.findUnique({
+        where: { id: reservation.book.sellerId }
+      })
+
+      const buyer = await prisma.user.findUnique({
+        where: { id: reservation.buyerId }
+      })
+
+      const newSellerCredit = Math.max(0, seller.creditScore - 2)
+      const newBuyerCredit = Math.max(0, buyer.creditScore - 2)
+
+      await prisma.user.update({
+        where: { id: seller.id },
+        data: { creditScore: newSellerCredit }
+      })
+
+      await prisma.user.update({
+        where: { id: buyer.id },
+        data: { creditScore: newBuyerCredit }
+      })
+    }
+
     await prisma.reservation.update({
       where: { id: req.params.id },
       data: { status: 'CANCELLED' }
     })
+
     await prisma.book.update({
       where: { id: reservation.bookId },
       data: { status: 'AVAILABLE' }
     })
 
-    res.json({ message: '已取消' })
+    res.json({
+      message: diffHours >= 3
+        ? '取消成功，双方信用 -2'
+        : '取消成功'
+    })
+
   } catch (e) {
     console.error('取消失败详情:', e.message)
     res.status(500).json({ error: '取消失败' })

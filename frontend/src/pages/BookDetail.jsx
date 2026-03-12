@@ -11,13 +11,27 @@ export default function BookDetail() {
   const [loading, setLoading] = useState(true)
   const [reserving, setReserving] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [editData, setEditData] = useState({
+    price: '',
+    condition: '',
+    description: '',
+    pickupLocation: ''
+  })
   const [msg, setMsg] = useState('')
 
   useEffect(() => {
     api.get(`/books/${id}`).then(res => {
       setBook(res.data)
-      // 假设后端在返回书籍详情时，会根据当前用户 token 判断并返回 isFavorited 字段
       setIsFavorited(res.data.isFavorited || false)
+
+      setEditData({
+        price: res.data.price,
+        condition: res.data.condition,
+        description: res.data.description || '',
+        pickupLocation: res.data.pickupLocation || ''
+      })
+
     }).finally(() => setLoading(false))
   }, [id])
 
@@ -27,7 +41,7 @@ export default function BookDetail() {
     try {
       const res = await api.post('/favorites/toggle', { bookId: id })
       setIsFavorited(res.data.isFavorited)
-      // 可选：展示一个简短的提示
+
       if (res.data.isFavorited) {
         setMsg('❤️ 已加入收藏夹')
         setTimeout(() => setMsg(''), 2000)
@@ -50,10 +64,50 @@ export default function BookDetail() {
     }
   }
 
+  const handleSaveEdit = async () => {
+
+    try {
+
+      const res = await api.put(`/books/${id}`, editData)
+
+      setBook(res.data)
+
+      setEditing(false)
+
+      setMsg('✅ 修改成功')
+
+    } catch (e) {
+
+      setMsg('❌ 修改失败')
+
+    }
+
+  }
+  const handleRemove = async () => {
+
+    if (!window.confirm('确定要下架这本书吗？')) return
+
+    try {
+
+      await api.delete(`/books/${id}`)
+
+      alert('书籍已下架')
+
+      navigate('/')
+
+    } catch {
+
+      alert('下架失败')
+
+    }
+
+  }
+
   if (loading) return <div style={{ textAlign: 'center', padding: 60, color: '#888' }}>加载中...</div>
   if (!book) return <div style={{ textAlign: 'center', padding: 60, color: '#888' }}>书籍不存在</div>
 
   return (
+
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
       <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#ff6b35', cursor: 'pointer', fontSize: 14, marginBottom: 16, fontWeight: 600 }}>← 返回列表</button>
 
@@ -175,7 +229,46 @@ export default function BookDetail() {
 
           {msg && <div style={{ padding: '14px', borderRadius: 10, marginBottom: 20, fontSize: 14, fontWeight: 600, textAlign: 'center', background: msg.startsWith('✅') ? '#ecfdf5' : '#fef2f2', color: msg.startsWith('✅') ? '#059669' : '#dc2626', border: '1px solid currentColor' }}>{msg}</div>}
 
+          {book.seller?.id === user?.id && (
+
+            <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+
+              <button
+                onClick={() => setEditing(true)}
+                style={{
+                  flex: 1,
+                  padding: 14,
+                  borderRadius: 10,
+                  border: '1px solid #ddd',
+                  background: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: 700
+                }}
+              >
+                ✏️ 编辑信息
+              </button>
+
+              <button
+                onClick={handleRemove}
+                style={{
+                  flex: 1,
+                  padding: 14,
+                  borderRadius: 10,
+                  border: 'none',
+                  background: '#f87171',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: 700
+                }}
+              >
+                📴 下架书籍
+              </button>
+
+            </div>
+
+          )}
           {book.status === 'AVAILABLE' ? (
+
             <button
               onClick={handleReserve}
               disabled={reserving || book.seller?.id === user?.id}
@@ -194,8 +287,107 @@ export default function BookDetail() {
               {book.status === 'RESERVED' ? '已被预约' : '已售出'}
             </div>
           )}
+
         </div>
       </div>
+      {
+        editing && (
+
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}>
+
+            <div style={{
+              background: '#fff',
+              padding: 30,
+              borderRadius: 16,
+              width: 400
+            }}>
+
+              <h3 style={{ marginBottom: 20 }}>编辑书籍</h3>
+
+              <input
+                value={editData.price}
+                onChange={e => setEditData({ ...editData, price: e.target.value })}
+                placeholder="价格"
+                style={inputStyle}
+              />
+
+              <input
+                value={editData.condition}
+                onChange={e => setEditData({ ...editData, condition: e.target.value })}
+                placeholder="成色"
+                style={inputStyle}
+              />
+
+              <input
+                value={editData.pickupLocation}
+                onChange={e => setEditData({ ...editData, pickupLocation: e.target.value })}
+                placeholder="取货地点"
+                style={inputStyle}
+              />
+
+              <textarea
+                value={editData.description}
+                onChange={e => setEditData({ ...editData, description: e.target.value })}
+                placeholder="书籍描述"
+                style={{ ...inputStyle, height: 80 }}
+              />
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+
+                <button
+                  onClick={handleSaveEdit}
+                  style={{
+                    flex: 1,
+                    padding: 12,
+                    borderRadius: 8,
+                    border: 'none',
+                    background: '#ff6b35',
+                    color: '#fff',
+                    fontWeight: 700
+                  }}
+                >
+                  保存修改
+                </button>
+
+                <button
+                  onClick={() => setEditing(false)}
+                  style={{
+                    flex: 1,
+                    padding: 12,
+                    borderRadius: 8,
+                    border: '1px solid #ddd',
+                    background: '#fff'
+                  }}
+                >
+                  取消
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )
+      }
     </div>
+
   )
+
+}
+
+const inputStyle = {
+  width: '100%',
+  padding: 10,
+  border: '1px solid #ddd',
+  borderRadius: 8,
+  marginBottom: 10
 }

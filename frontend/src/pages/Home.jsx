@@ -96,7 +96,7 @@ export default function Home() {
                   flexDirection: 'column',
                   justifyContent: 'space-between'
                 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, marginBottom: 4, overflow: 'hidden',textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{book.title}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, marginBottom: 4,whiteSpace: 'nowrap', overflow: 'hidden',textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{book.title}</div>
                   <div style={{
                     fontSize: 12,
                     color: '#888',

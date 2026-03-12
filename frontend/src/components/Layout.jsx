@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
-import { ReactComponent as Logo } from '../../../public/campusbooks.svg'
+import { ReactComponent as Logo } from '../assets/logo.svg'
 import useStore from '../store'
 
 export default function Layout() {

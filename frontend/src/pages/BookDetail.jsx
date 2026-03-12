@@ -17,8 +17,8 @@ export default function BookDetail() {
     condition: '',
     description: '',
     pickupLocation: '',
-    ISBN:'',
-    coverUrl:''
+    ISBN: '',
+    coverUrl: ''
   })
   const [msg, setMsg] = useState('')
 
@@ -31,7 +31,9 @@ export default function BookDetail() {
         price: res.data.price,
         condition: res.data.condition,
         description: res.data.description || '',
-        pickupLocation: res.data.pickupLocation || ''
+        pickupLocation: res.data.pickupLocation || '',
+        isbn: res.data.isbn || '',
+        coverUrl: res.data.coverUrl || ''
       })
 
     }).finally(() => setLoading(false))
@@ -335,6 +337,23 @@ export default function BookDetail() {
                 value={editData.description}
                 onChange={e => setEditData({ ...editData, description: e.target.value })}
                 style={{ ...inputStyle, height: 80 }}
+              />
+              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                ISBN
+              </label>
+              <input
+                value={editData.isbn}
+                onChange={e => setEditData({ ...editData, isbn: e.target.value })}
+                style={inputStyle}
+              />
+
+              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+                封面图片URL
+              </label>
+              <input
+                value={editData.coverUrl}
+                onChange={e => setEditData({ ...editData, coverUrl: e.target.value })}
+                style={inputStyle}
               />
 
               <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>

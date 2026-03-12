@@ -19,7 +19,7 @@ export default function Admin() {
   }, [user])
 
   const fetchAdminData = async () => {
-    if (book.status !== 'AVAILABLE') {
+    if (books.status !== 'AVAILABLE') {
       alert('该书籍已被预约，无法强制下架')
       return
     }

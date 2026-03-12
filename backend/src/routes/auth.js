@@ -4,10 +4,8 @@ const jwt = require('jsonwebtoken')
 const prisma = require('../lib/prisma')
 const auth = require('../middleware/auth')
 
-// 1. 注册接口
 router.post('/register', async (req, res) => {
   try {
-    
     const { studentId, email, password, nickname, department, qq } = req.body
     if (!studentId || !email || !password || !nickname) {
       return res.status(400).json({ error: '请填写完整信息' })
@@ -19,19 +17,16 @@ router.post('/register', async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10)
 
-    // 创建用户，isAdmin 默认由数据库 schema 的 @default(false) 处理
     const user = await prisma.user.create({
       data: { studentId, email, passwordHash, nickname, department, qq }
     })
 
-    // Token 中可以带上 isAdmin 方便中间件解析
     const token = jwt.sign(
       { id: user.id, nickname: user.nickname, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     )
 
-    // 返回给前端的信息
     res.json({
       token,
       user: {
@@ -47,7 +42,6 @@ router.post('/register', async (req, res) => {
   }
 })
 
-// 2. 登录接口
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body
@@ -69,8 +63,8 @@ router.post('/login', async (req, res) => {
         id: user.id,
         nickname: user.nickname,
         email: user.email,
-        qq: user.qq, // 替换了原来的 campus
-        isAdmin: user.isAdmin // 前端 Layout 判断就靠这一行
+        qq: user.qq,
+        isAdmin: user.isAdmin
       }
     })
   } catch (e) {
@@ -78,20 +72,18 @@ router.post('/login', async (req, res) => {
   }
 })
 
-// 3. 获取当前用户信息 (用于页面刷新后恢复状态)
-router.get('/me', require('./../../src/middleware/auth'), async (req, res) => {
+router.get('/me', auth, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
-      
       select: {
         id: true,
         nickname: true,
         email: true,
         studentId: true,
         department: true,
-        qq: true, 
-        isAdmin: true, 
+        qq: true,
+        isAdmin: true,
         creditScore: true,
         createdAt: true
       }
@@ -101,13 +93,11 @@ router.get('/me', require('./../../src/middleware/auth'), async (req, res) => {
     res.status(500).json({ error: '获取失败' })
   }
 })
-// 4. 修改当前用户信息 (用于页面刷新后恢复状态)
+
 router.put('/profile', auth, async (req, res) => {
-
   try {
-
     const userId = req.user.id
-    const { nickname, email, qq, department, campus } = req.body
+    const { nickname, email, qq, department } = req.body
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -116,7 +106,6 @@ router.put('/profile', auth, async (req, res) => {
         email,
         qq,
         department,
-        campus
       },
       select: {
         id: true,
@@ -125,7 +114,6 @@ router.put('/profile', auth, async (req, res) => {
         email: true,
         qq: true,
         department: true,
-        campus: true,
         creditScore: true,
         isAdmin: true
       }
@@ -134,34 +122,22 @@ router.put('/profile', auth, async (req, res) => {
     res.json({ user })
 
   } catch (err) {
-
     console.error(err)
 
-    // ⭐ Prisma 唯一约束错误
     if (err.code === 'P2002') {
-
       const field = err.meta?.target?.[0]
 
       if (field === 'email') {
-        return res.status(400).json({
-          error: '该邮箱已被使用'
-        })
+        return res.status(400).json({ error: '该邮箱已被使用' })
       }
-
       if (field === 'studentId') {
-        return res.status(400).json({
-          error: '学号已存在'
-        })
+        return res.status(400).json({ error: '学号已存在' })
       }
-
-      return res.status(400).json({
-        error: '数据重复'
-      })
+      return res.status(400).json({ error: '数据重复' })
     }
 
-    res.status(500).json({
-      error: '服务器错误'
-    })
+    res.status(500).json({ error: '服务器错误' })
   }
 })
+
 module.exports = router

@@ -6,7 +6,6 @@ function genCode() {
   return Math.random().toString(36).substr(2, 6).toUpperCase()
 }
 
-// 发起预约
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const { bookId, pickupTime } = req.body
@@ -31,7 +30,6 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 })
 
-// 获取我的预约列表
 router.get('/my', authMiddleware, async (req, res) => {
   try {
     const reservations = await prisma.reservation.findMany({
@@ -49,7 +47,6 @@ router.get('/my', authMiddleware, async (req, res) => {
   }
 })
 
-// 完成交易（核销取货码）
 router.put('/:id/complete', authMiddleware, async (req, res) => {
   try {
     const { pickupCode } = req.body
@@ -66,8 +63,6 @@ router.put('/:id/complete', authMiddleware, async (req, res) => {
   }
 })
 
-// 取消预约
-// 取消预约（已修复权限判断）
 router.put('/:id/cancel', authMiddleware, async (req, res) => {
   try {
     console.log('=== 取消预约调试信息 ===')
@@ -85,7 +80,6 @@ router.put('/:id/cancel', authMiddleware, async (req, res) => {
     console.log('类型对比 buyerId === req.user.id:', reservation.buyerId === req.user.id)
     console.log('字符串安全对比 String(buyerId) === String(user.id):', String(reservation.buyerId) === String(req.user?.id || req.user?._id))
 
-    // 修复点：使用 String() 安全比较（解决类型不一致）
     if (String(reservation.buyerId) !== String(req.user?.id || req.user?._id)) {
       return res.status(403).json({ error: '无权操作' })
     }

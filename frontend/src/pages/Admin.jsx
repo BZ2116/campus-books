@@ -7,68 +7,44 @@ export default function Admin() {
 
   const { user } = useStore()
   const navigate = useNavigate()
-
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-
     if (!user || !user.isAdmin) {
       navigate('/')
       return
     }
-
     fetchAdminData()
-
   }, [user])
-
 
   const fetchAdminData = async () => {
 
     try {
-
       const res = await api.get('/admin/books')
-
       setBooks(res.data)
-
     } catch {
-
       alert('获取管理数据失败')
-
     } finally {
-
       setLoading(false)
-
     }
 
   }
 
-
   const handleDelete = async (book) => {
-
     if (book.status !== 'AVAILABLE') {
       alert('该书籍已被预约，无法强制下架')
       return
     }
-
     if (!window.confirm('确定要强行下架该书籍吗？')) return
-
     try {
-
       await api.delete(`/admin/books/${book.id}`)
-
       setBooks(prev => prev.filter(b => b.id !== book.id))
-
       alert('下架成功')
-
     } catch {
-
       alert('下架失败')
-
     }
-
   }
-
 
   if (loading) {
     return (
@@ -79,13 +55,10 @@ export default function Admin() {
   }
 
   return (
-
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: 20 }}>
-
       <h2 style={{ marginBottom: 20 }}>
         🛡️ 平台管理后台
       </h2>
-
       <table style={{
         width: '100%',
         background: '#fff',
@@ -105,13 +78,9 @@ export default function Admin() {
             <th style={tdStyle}>操作</th>
           </tr>
         </thead>
-
         <tbody>
-
           {books.map(b => (
-
             <tr key={b.id} style={{ borderBottom: '1px solid #eee' }}>
-
               <td style={tdStyle}>
                 <img
                   src={b.coverUrl}
@@ -123,19 +92,15 @@ export default function Admin() {
                   }}
                 />
               </td>
-
               <td style={tdStyle}>
                 {b.title}
               </td>
-
               <td style={tdStyle}>
                 {b.seller?.studentId || '未知'}
               </td>
-
               <td style={tdStyle}>
                 ¥{b.price}
               </td>
-
               <td style={tdStyle}>
                 <span style={{
                   padding: '4px 8px',
@@ -178,17 +143,11 @@ export default function Admin() {
                   强行下架
                 </button>
               </td>
-
             </tr>
-
           ))}
-
         </tbody>
-
       </table>
-
     </div>
-
   )
 
 }

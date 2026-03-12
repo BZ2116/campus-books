@@ -3,8 +3,6 @@ const prisma = require('../lib/prisma')
 const authMiddleware = require('../middleware/auth')
 const axios = require('axios')
 
-
-// 获取书籍列表
 router.get('/', async (req, res) => {
   try {
     const { search, category, page = 1, limit = 20 } = req.query
@@ -33,7 +31,6 @@ router.get('/', async (req, res) => {
   }
 })
 
-// 获取单本书籍详情
 router.get('/:id', async (req, res) => {
   try {
     const book = await prisma.book.findUnique({
@@ -48,13 +45,10 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-
-
-// 发布书籍
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const { isbn, title, author, publisher, coverUrl, price, originalPrice, condition, category, tags, description, pickupLocation } = req.body
-    if (!title || !price || !condition || !category ) {
+    if (!title || !price || !condition || !category) {
       return res.status(400).json({ error: '请填写完整信息' })
     }
     const book = await prisma.book.create({
@@ -74,7 +68,6 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 })
 
-// 下架书籍
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const book = await prisma.book.findUnique({ where: { id: req.params.id } })
@@ -86,39 +79,16 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     res.status(500).json({ error: '操作失败' })
   }
 })
-// 修改书籍信息
+
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-
     const { id } = req.params
+    const { price, originalPrice, condition, description, pickupLocation, category, tags } = req.body
 
-    const {
-      price,
-      originalPrice,
-      condition,
-      description,
-      pickupLocation,
-      category,
-      tags
-    } = req.body
-
-    const book = await prisma.book.findUnique({
-      where: { id }
-    })
-
-    if (!book) {
-      return res.status(404).json({ error: '书籍不存在' })
-    }
-
-    // 只有发布者可以修改
-    if (book.sellerId !== req.user.id) {
-      return res.status(403).json({ error: '无权修改该书籍' })
-    }
-
-    // 已成交或已预约不允许修改
-    if (book.status !== 'AVAILABLE') {
-      return res.status(400).json({ error: '当前状态不可修改' })
-    }
+    const book = await prisma.book.findUnique({ where: { id } })
+    if (!book) return res.status(404).json({ error: '书籍不存在' })
+    if (book.sellerId !== req.user.id) return res.status(403).json({ error: '无权修改该书籍' })
+    if (book.status !== 'AVAILABLE') return res.status(400).json({ error: '当前状态不可修改' })
 
     const updatedBook = await prisma.book.update({
       where: { id },
@@ -132,16 +102,9 @@ router.put('/:id', authMiddleware, async (req, res) => {
         tags: tags ?? book.tags
       }
     })
-
     res.json(updatedBook)
-
   } catch (e) {
-
-    res.status(500).json({
-      error: '修改失败',
-      detail: e.message
-    })
-
+    res.status(500).json({ error: '修改失败', detail: e.message })
   }
 })
 

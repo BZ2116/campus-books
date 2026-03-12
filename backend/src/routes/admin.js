@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const prisma = require('../lib/prisma')
-const auth = require('../../src/middleware/auth') 
+const auth = require('../../src/middleware/auth')
 
 // 管理员权限校验中间件
 const adminOnly = (req, res, next) => {
@@ -11,7 +11,6 @@ const adminOnly = (req, res, next) => {
   }
 }
 
-// backend/routes/admin.js
 router.get('/books', auth, adminOnly, async (req, res) => {
   try {
     const books = await prisma.book.findMany({
@@ -36,10 +35,9 @@ router.get('/books', auth, adminOnly, async (req, res) => {
     res.status(500).json({ error: '获取数据失败' })
   }
 })
-// DELETE /api/admin/books/:id - 管理员强行下架
+
 router.delete('/books/:id', auth, adminOnly, async (req, res) => {
   try {
-
     const book = await prisma.book.findUnique({
       where: { id: req.params.id }
     })
@@ -48,7 +46,6 @@ router.delete('/books/:id', auth, adminOnly, async (req, res) => {
       return res.status(404).json({ error: '书籍不存在' })
     }
 
-    // 只允许下架 AVAILABLE
     if (book.status !== 'AVAILABLE') {
       return res.status(400).json({
         error: '该书已被预约或已完成交易，无法强制下架'

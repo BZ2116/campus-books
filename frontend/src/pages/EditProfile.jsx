@@ -12,8 +12,7 @@ export default function EditProfile() {
     const [email, setEmail] = useState(user.email || '')
     const [qq, setQq] = useState(user.qq || '')
     const [department, setDepartment] = useState(user.department || '')
-    const [isbn, setIsbn] = useState(book.isbn || '')
-    const [coverUrl, setCoverUrl] = useState(book.coverUrl || '')
+
 
 
     const handleSubmit = async (e) => {

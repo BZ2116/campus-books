@@ -1,4 +1,5 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
+import { ReactComponent as Logo } from '../../public/campusbooks.svg'
 import useStore from '../store'
 
 export default function Layout() {
@@ -18,8 +19,20 @@ export default function Layout() {
         height: 60, position: 'sticky', top: 0, zIndex: 100,
         boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
       }}>
-        <Link to="/" style={{ color: '#ff6b35', fontWeight: 900, fontSize: 20, textDecoration: 'none' }}>
-          📚 校园书市
+        <Link
+          to="/"
+          style={{
+            color: '#ff6b35',
+            fontWeight: 900,
+            fontSize: 20,
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}
+        >
+          <Logo style={{ width: 24, height: 24 }} />
+          校园书市
         </Link>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <Link to="/" style={{ color: '#ccc', textDecoration: 'none', fontSize: 14 }}>首页</Link>
@@ -28,10 +41,10 @@ export default function Layout() {
             <>
               {/* --- 新增：管理员入口 --- */}
               {user.isAdmin && (
-                <Link to="/admin" style={{ 
+                <Link to="/admin" style={{
                   color: '#fbbf24', // 使用亮黄色区分普通链接
-                  textDecoration: 'none', 
-                  fontSize: 14, 
+                  textDecoration: 'none',
+                  fontSize: 14,
                   fontWeight: 700,
                   display: 'flex',
                   alignItems: 'center',
@@ -45,7 +58,7 @@ export default function Layout() {
               <Link to="/publish" style={{ color: '#ff6b35', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>+ 发布</Link>
               <Link to="/reservations" style={{ color: '#ccc', textDecoration: 'none', fontSize: 14 }}>我的预约</Link>
               <Link to="/profile" style={{ color: '#ccc', textDecoration: 'none', fontSize: 14 }}>{user.nickname}</Link>
-              
+
               <button onClick={handleLogout} style={{
                 background: 'transparent', border: '1px solid #555',
                 color: '#ccc', padding: '4px 12px', borderRadius: 6,

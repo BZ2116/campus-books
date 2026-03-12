@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
-import { ReactComponent as Logo } from '../assets/campusbooks.svg'
+import logo from '../assets/campusbooks.svg'
 import useStore from '../store'
 
 export default function Layout() {
@@ -31,7 +31,7 @@ export default function Layout() {
             gap: 6
           }}
         >
-          <Logo style={{ width: 24, height: 24 }} />
+          <img src={logo} style={{ width: 24 }} />
           校园书市
         </Link>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>

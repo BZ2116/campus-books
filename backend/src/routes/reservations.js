@@ -30,7 +30,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 })
 
-router.get('/my', authMiddleware, async (req, res) => {
+router.get('/me', authMiddleware, async (req, res) => {
   try {
     const reservations = await prisma.reservation.findMany({
       where: { OR: [{ buyerId: req.user.id }, { sellerId: req.user.id }] },

@@ -81,7 +81,7 @@ export default function Reservations() {
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{r.book?.title}</div>
                 <div style={{ fontSize: 13, color: '#888', marginBottom: 8 }}>
-                  {isBuyer ? `卖家：${r.seller?.nickname}` : `买家：${r.buyer?.nickname}`} · {r.book?.campus}
+                  {isBuyer ? `卖家：${r.seller?.nickname}` : `买家：${r.buyer?.nickname}`} 
                 </div>
 
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>

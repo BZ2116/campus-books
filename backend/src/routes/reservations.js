@@ -35,7 +35,7 @@ router.get('/me', authMiddleware, async (req, res) => {
     const reservations = await prisma.reservation.findMany({
       where: { OR: [{ buyerId: req.user.id }, { sellerId: req.user.id }] },
       include: {
-        book: { select: { title: true, coverUrl: true, price: true, campus: true } },
+        book: { select: { title: true, coverUrl: true, price: true } },
         buyer: { select: { nickname: true } },
         seller: { select: { nickname: true } }
       },

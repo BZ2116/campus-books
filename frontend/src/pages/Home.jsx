@@ -109,7 +109,6 @@ export default function Home() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: 18, fontWeight: 900, color: '#ff6b35' }}>¥{book.price}</span>
-                    <span style={{ fontSize: 11, color: '#aaa' }}>{book.campus}</span>
                   </div>
                   <div style={{
                     fontSize: 11,
